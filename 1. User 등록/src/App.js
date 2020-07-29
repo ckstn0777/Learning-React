@@ -1,5 +1,5 @@
 // App.js
-import React, { useRef, useState, useMemo, useCallback } from 'react';
+import React, { useRef, useState, useMemo, useCallback, useReducer } from 'react';
 import './App.css';
 import UserList from './UserList';
 import CreateUser from './CreateUser';
@@ -9,26 +9,13 @@ function countActiveUser(users) {
   return users.filter((user) => user.active).length;
 }
 
-function App() {
-  const [inputs, setInputs] = useState({
+// 초기상태
+const initialState = {
+  inputs: {
     username: '',
-    email: '',
-  });
-  const { username, email } = inputs;
-
-  const onChange = useCallback(
-    (e) => {
-      const { name, value } = e.target;
-
-      setInputs({
-        ...inputs,
-        [name]: value,
-      });
-    },
-    [inputs],
-  );
-
-  const [users, setUsers] = useState([
+    email: ''
+  },
+  users: [
     {
       id: 1,
       username: 'velopert',
@@ -47,35 +34,25 @@ function App() {
       email: 'testert@daum.net',
       active: false,
     },
-  ]);
+  ]
+}
 
+// 리듀서 함수
+function reducer(state, action) {
+	return state;
+}
+
+function App() {
+  const [state, dispatch] = useReducer(reducer, initialState);
   const nextId = useRef(4);
-  const onCreate = useCallback(() => {
-    const user = {
-      id: nextId.current,
-      username,
-      email,
-    };
-    setUsers((users) => users.concat(user));
+  const { users } = state;
+  const {username, email} = state.inputs;
 
-    setInputs({
-      username: '',
-      email: '',
-    });
-    nextId.current += 1;
-  }, [username, email]);
-
-  const onRemove = useCallback((id) => {
-    setUsers((users) => users.filter((user) => user.id !== id));
-  }, []);
-
-  const onToggle = useCallback((id) => {
-    setUsers((users) =>
-      users.map((user) =>
-        user.id === id ? { ...user, active: !user.active } : user,
-      ),
-    );
-  }, []);
+  // 작성예정
+  const onChange;
+  const onCreate;
+  const onRemove;
+  const onToggle;
 
   const count = useMemo(() => countActiveUser(users), [users]);
 
