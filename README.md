@@ -8,7 +8,7 @@
 	1-5. Immer.js 사용(v1.4.0)  
   
 2. TodoList 만들기  
-	2-1. UI 만들기(Styled-components 방식사용) (v2.0.0~)  
+	2-1. UI 만들기(Styled-components 방식사용) (v2.0.0~v2.0.2)  
 	2-2.  
   	
 3. API 연동  
