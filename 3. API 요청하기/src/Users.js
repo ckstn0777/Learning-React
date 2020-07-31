@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import useAsync from './useAsync';
+import { useAsync } from 'react-async';
 import User from './User';
 
 async function getUsers() {
@@ -12,13 +12,14 @@ async function getUsers() {
 
 function Users() {
   const [userId, setUserId] = useState(null);
-  const [state, refetch] = useAsync(getUsers, [], true);
+  // reload 함수를 사용하면, 데이터를 다시 불러올 수 있습니다.
+  const { data: users, error, isLoading, reload } = useAsync({
+    promiseFn: getUsers,
+  });
 
-  const { loading, data: users, error } = state; // state.data를 users 키워드로 조회
-
-  if (loading) return <div>로딩중...</div>;
+  if (isLoading) return <div>로딩중...</div>;
   if (error) return <div>에러가 발생했습니다</div>;
-  if (!users) return <button onClick={refetch}>불러오기</button>;
+  if (!users) return <button onClick={reload}>불러오기</button>;
 
   return (
     <>
@@ -33,7 +34,7 @@ function Users() {
           </li>
         ))}
       </ul>
-      <button onClick={refetch}>다시 불러오기</button>
+      <button onClick={reload}>다시 불러오기</button>
       {userId && <User id={userId} />}
     </>
   );
