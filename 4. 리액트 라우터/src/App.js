@@ -4,6 +4,7 @@ import './App.css';
 import { Route, Link } from 'react-router-dom';
 import Home from './Home';
 import About from './About';
+import Profile from './Profile';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
       이를 고치기 위해선 Home 을 위한 라우트에 exact 라는 props 를 true 로 설정하시면 됩니다.*/}
       <Route path="/" exact={true} component={Home} />
       <Route path="/about" component={About} />
+      <Route path="/profiles/:username" component={Profile} />
     </div>
   );
 }
