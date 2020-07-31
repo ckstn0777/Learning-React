@@ -15,4 +15,5 @@
 	3-1. API 요청하기 (v3.0.0 ~ v3.0.1)  
 	3-2. useReducer 사용 (v3.1.0)  
 	3-3. useAsync 커스텀 Hook 분리해서 사용 (v3.2.0 ~ v3.2.1)  
-	3-4. react-async를 사용 (v3.3.0)
+	3-4. react-async를 사용 (v3.3.0)  
+	3-5. context API 사용 (v3.4.0 ~ )
