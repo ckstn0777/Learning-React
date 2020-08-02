@@ -7,15 +7,13 @@ import { createStore, applyMiddleware } from 'redux';
 import rootReducer from './modules';
 import { Provider } from 'react-redux';
 import logger from 'redux-logger';
-import myLogger from './middlewares/MyLogger';
 import { composeWithDevTools } from 'redux-devtools-extension';
+import ReduxThunk from 'redux-thunk';
 
-// 스토어에 미들웨어를 적용 할 때에는 applyMiddleware 라는 함수를 사용합니다.
-// Redux DevTools 를 미들웨어와 함께 사용해야 한다면 composeWithDevTools를 사용합니다.
-// applyMiddleware안에 redux-logger와 우리가 직접만든 myLogger를 같이 사용할 수 있습니다.
+// logger 를 사용하는 경우, logger가 가장 마지막에 와야합니다.
 const store = createStore(
   rootReducer,
-  composeWithDevTools(applyMiddleware(logger, myLogger)),
+  composeWithDevTools(applyMiddleware(ReduxThunk, logger)),
 ); // 스토어를 만듭니다.
 
 // Provider로 store를 넣어서 App 을 감싸게 되면
