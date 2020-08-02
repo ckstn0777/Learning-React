@@ -11,6 +11,9 @@ const GET_POST = 'GET_POST';
 const GET_POST_SUCCESS = 'GET_POST_SUCCESS';
 const GET_POST_ERROR = 'GET_POST_ERROR';
 
+// 포스트 비우기
+const CLEAR_POST = 'CLEAR_POST';
+
 // thunk 를 사용 할 때, 꼭 모든 액션들에 대하여 액션 생성함수를 만들 필요는 없습니다.
 // 그냥 thunk 함수에서 바로 액션 객체를 만들어주어도 괜찮습니다.
 export const getPosts = () => async (dispatch) => {
@@ -34,6 +37,8 @@ export const getPost = (id) => async (dispatch) => {
     dispatch({ type: GET_POST_ERROR, error: e }); // 실패
   }
 };
+
+export const clearPost = () => ({ type: CLEAR_POST });
 
 // 초기 상태
 const initialState = {
@@ -105,6 +110,15 @@ export default function posts(state = initialState, action) {
           loading: false,
           data: null,
           error: action.error,
+        },
+      };
+    case CLEAR_POST:
+      return {
+        ...state,
+        post: {
+          loading: false,
+          data: null,
+          error: null,
         },
       };
     default:

@@ -10,8 +10,9 @@ function PostListContainer() {
 
   // 컴포넌트 마운트 후 포스트 목록 요청
   useEffect(() => {
+    if (data) return; // 기존 데이터가 있으면 다시 로딩하지 않고 그대로 사용.
     dispatch(getPosts());
-  }, [dispatch]);
+  }, [data, dispatch]);
 
   if (loading) return <div>로딩중...</div>;
   if (error) return <div>에러 발생!</div>;
