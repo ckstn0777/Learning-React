@@ -16,22 +16,61 @@ const GET_POST = 'GET_POST';
 const GET_POST_SUCCESS = 'GET_POST_SUCCESS';
 const GET_POST_ERROR = 'GET_POST_ERROR';
 
-// 포스트 비우기
-const CLEAR_POST = 'CLEAR_POST';
-
 export const getPosts = createPromiseThunk(GET_POSTS, postsAPI.getPosts);
-export const getPost = createPromiseThunk(GET_POST, postsAPI.getPostById);
-
-export const clearPost = () => ({ type: CLEAR_POST });
+export const getPost = (id) => async (dispatch) => {
+  dispatch({ type: GET_POST, meta: id });
+  try {
+    const payload = await postsAPI.getPostById(id);
+    dispatch({ type: GET_POST_SUCCESS, payload, meta: id });
+  } catch (e) {
+    dispatch({
+      type: GET_POST_ERROR,
+      payload: e,
+      error: true,
+      meta: id,
+    });
+  }
+};
 
 // 초기 상태
 const initialState = {
   posts: reducerUtils.initial(),
-  post: reducerUtils.initial(),
+  post: {},
 };
 
 const getPostsReducer = handleAsyncActions(GET_POSTS, 'posts', true);
-const getPostReducer = handleAsyncActions(GET_POST, 'post');
+const getPostReducer = (state, action) => {
+  const id = action.meta;
+  switch (action.type) {
+    case GET_POST:
+      return {
+        ...state,
+        post: {
+          ...state.post,
+          [id]: reducerUtils.loading(state.post[id] && state.post[id].data),
+          // 아주 처음 불러올때는 undefined이거든요. 그래서 앞에다가 'state.post[id] &&' 를 해준거에요.
+        },
+      };
+    case GET_POST_SUCCESS:
+      return {
+        ...state,
+        post: {
+          ...state.post,
+          [id]: reducerUtils.success(action.payload),
+        },
+      };
+    case GET_POST_ERROR:
+      return {
+        ...state,
+        post: {
+          ...state.post,
+          [id]: reducerUtils.error(action.payload),
+        },
+      };
+    default:
+      return state;
+  }
+};
 
 // 리듀서 함수 작성
 export default function posts(state = initialState, action) {
