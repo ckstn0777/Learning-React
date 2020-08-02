@@ -11,7 +11,7 @@ function PostListContainer() {
   // 컴포넌트 마운트 후 포스트 목록 요청
   useEffect(() => {
     dispatch(getPosts());
-  }, [data, dispatch]);
+  }, [dispatch]);
 
   // 로딩중이면서, 데이터가 없을 때에만 로딩중... 표시(가장 처음에만)
   // 이후에는 호출하기는 하는데, 이전데이터가 있으니까 로딩중 표시는 안나옴.
