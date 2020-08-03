@@ -1,16 +1,8 @@
 import React from 'react';
-import Counter from './Counter';
-import ReducerSample from './ReducerSample';
-import { SampleProvider } from './SampleContext';
+import CounterContainer from './containers/CounterContainer';
 
 function App() {
-  return (
-    <SampleProvider>
-      <Counter />
-      <hr />
-      <ReducerSample />
-    </SampleProvider>
-  );
+  return <CounterContainer />;
 }
 
 export default App;
