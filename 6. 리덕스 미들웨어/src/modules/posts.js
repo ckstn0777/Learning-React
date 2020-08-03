@@ -4,7 +4,7 @@ import {
   handleAsyncActions,
   handleAsyncActionsById,
 } from '../lib/asyncUtils';
-import { call, put, takeEvery } from 'redux-saga/effects';
+import { call, put, takeEvery, getContext } from 'redux-saga/effects';
 
 /* 액션 타입 */
 // 포스트 여러개 조회하기
@@ -17,13 +17,15 @@ const GET_POST = 'GET_POST';
 const GET_POST_SUCCESS = 'GET_POST_SUCCESS';
 const GET_POST_ERROR = 'GET_POST_ERROR';
 
+const GO_TO_HOME = 'GO_TO_HOME';
+
 export const getPosts = () => ({ type: GET_POSTS });
 export const getPost = (id) => ({ type: GET_POST, payload: id, meta: id });
+export const goToHome = () => ({ type: GO_TO_HOME });
 
 function* getPostsSaga() {
   try {
     const posts = yield call(postsAPI.getPosts); // call 을 사용하면 특정 함수를 호출하고, 결과물이 반환 될 때까지 기다려줄 수 있습니다.
-    console.log(posts);
     yield put({
       type: GET_POSTS_SUCCESS,
       payload: posts,
@@ -58,16 +60,17 @@ function* getPostSaga(action) {
   }
 }
 
+function* goToHomeSaga() {
+  const history = yield getContext('history');
+  history.push('/');
+}
+
 // 사가들을 합치기
 export function* postsSaga() {
   yield takeEvery(GET_POSTS, getPostsSaga);
   yield takeEvery(GET_POST, getPostSaga);
+  yield takeEvery(GO_TO_HOME, goToHomeSaga);
 }
-
-// 3번째 인자를 사용하면 withExtraArgument 에서 넣어준 값들을 사용 할 수 있습니다.
-export const goToHome = () => (dispatch, getState, { history }) => {
-  history.push('/');
-};
 
 // initialState 쪽도 반복되는 코드를 initial() 함수를 사용해서 리팩토링 했습니다.
 const initialState = {
