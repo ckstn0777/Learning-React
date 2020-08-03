@@ -1,31 +1,28 @@
 const Koa = require("koa");
+const Router = require("koa-router");
 
 const app = new Koa();
+const router = new Router();
 
-// 하나의 미들웨어임
-// ctx는 Context 줄임말로 웹 요청과 응답에 관한 정보를 지님
-// next는 현재 처리 중인 미들웨어의 다음 미들웨어를 호출하는 함수임
-app.use(async (ctx, next) => {
-  console.log(1);
-  console.log(ctx.url);
-
-  if (ctx.query.authorized !== "1") {
-    ctx.status = 401; // Unauthorized
-    return;
-  }
-
-  await next(); // next는 Promise이므로 async/await 사용이 가능.
-  console.log("END"); // 따라서 다음 미들웨어가 실행된 이후 END가 출력됨
+// 라우터 설정
+router.get("/", (ctx) => {
+  ctx.body = "홈";
 });
 
-app.use((ctx, next) => {
-  console.log(2);
-  next();
+// 파라미터 받아오기
+router.get("/about/:name?", (ctx) => {
+  const { name } = ctx.params;
+  ctx.body = name ? `${name}의 소개` : "소개";
 });
 
-app.use((ctx) => {
-  ctx.body = "hello world";
+// 쿼리 받아오기
+router.get("/posts", (ctx) => {
+  const { id } = ctx.query;
+  ctx.body = id ? `포스트 #${id}` : "포스트 아이디가 없습니다";
 });
+
+// app 인스턴스에 라우터 적용
+app.use(router.routes()).use(router.allowedMethods());
 
 app.listen(4000, () => {
   console.log("Listening to port 4000");
