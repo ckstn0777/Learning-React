@@ -38,4 +38,8 @@
 
 8. TypeScript 사용하기
 	8-1. 기본 사용법 (v8.0.0 ~ v8.0.3)  
-	8-2. 리덕스 사용하기 (v8.1.0)
+	8-2. 리덕스 사용하기 (v8.1.0)  
+
+9. 코드 스플리팅(Spliting)
+	9-1. React.lazy와 Suspense를 통한 스플리팅(v9.0.0)  
+	9-2. Loadable Components를 통한 스플리팅(v9.1.0)
