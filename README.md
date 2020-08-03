@@ -35,3 +35,6 @@
 	6-4. redux-saga 사용하기 (v6.2.0 ~ v6.2.2)  
 
 7. TypeScript 기본 (v7.0.0)
+
+8. TypeScript 사용하기
+	8-1. 기본 사용법 (v8.0.0 ~ )
