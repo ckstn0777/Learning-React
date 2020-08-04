@@ -5,7 +5,7 @@ const jwtMiddleware = async (ctx, next) => {
   const token = ctx.cookies.get("access_token");
 
   if (!token) {
-    next(); // 토큰이 없음
+    return next(); // 토큰이 없음
   }
 
   try {

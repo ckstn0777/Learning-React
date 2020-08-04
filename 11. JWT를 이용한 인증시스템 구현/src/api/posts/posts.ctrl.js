@@ -4,8 +4,8 @@ import Joi from "@hapi/joi";
 
 const { ObjectId } = mongoose.Types;
 
-// 올바른 아이디인지 검증하는 미들웨어
-export const checkObjectId = (ctx, next) => {
+// 올바른 아이디인지 검증 + 포스트가 있는지 검증 미들웨어
+export const getPostById = async (ctx, next) => {
   const { id } = ctx.params;
 
   if (!ObjectId.isValid(id)) {
@@ -13,6 +13,29 @@ export const checkObjectId = (ctx, next) => {
     return;
   }
 
+  try {
+    const post = await Post.findById(id);
+    // 포스트가 존재하지 않을때
+    if (!post) {
+      ctx.status = 404; // Not Found
+      return;
+    }
+    ctx.state.post = post;
+    return next();
+  } catch (e) {
+    ctx.throw(500, e);
+  }
+
+  return next();
+};
+
+// 로그인 중인 사용자가 작성한 포스트인지 아닌지 판별 미들웨어
+export const checkOwnPost = (ctx, next) => {
+  const { user, post } = ctx.state;
+  if (post.user._id.toString() !== user._id) {
+    ctx.status = 403;
+    return;
+  }
   return next();
 };
 
@@ -38,7 +61,7 @@ export const write = async (ctx) => {
   }
 
   const { title, body, tags } = ctx.request.body;
-  const post = new Post({ title, body, tags });
+  const post = new Post({ title, body, tags, user: ctx.state.user });
 
   try {
     await post.save();
@@ -91,23 +114,7 @@ export const list = async (ctx) => {
 GET /api/posts/:id
 */
 export const read = async (ctx) => {
-  const { id } = ctx.params;
-
-  try {
-    const post = await Post.findById(id).exec();
-
-    // 포스트가 없으면 오류 반환
-    if (!post) {
-      ctx.status = 404;
-      ctx.body = {
-        message: "포스트가 존재하지 않습니다",
-      };
-      return;
-    }
-    ctx.body = post;
-  } catch (e) {
-    ctx.throw(500, e);
-  }
+  ctx.body = ctx.state.post;
 };
 
 /* 특정 포스트 제거
