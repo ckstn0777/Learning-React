@@ -1,11 +1,42 @@
 import Post from "../../models/post";
+import mongoose from "mongoose";
+import Joi from "@hapi/joi";
+
+const { ObjectId } = mongoose.Types;
+
+// 올바른 아이디인지 검증하는 미들웨어
+export const checkObjectId = (ctx, next) => {
+  const { id } = ctx.params;
+
+  if (!ObjectId.isValid(id)) {
+    ctx.status = 400; // Bad Request
+    return;
+  }
+
+  return next();
+};
 
 /* 포스트 작성
 POST /api/posts
 { title, body }
 */
 export const write = async (ctx) => {
-  // REST API의 Request Body는 ctx.request.body에서 조회할 수 있습니다.
+  // 먼저, 검증 할 스키마를 준비해야합니다.
+  const schema = Joi.object().keys({
+    title: Joi.string().required(),
+    body: Joi.string().required(),
+    tags: Joi.array().items(Joi.string().required()),
+  });
+
+  // 그 다음엔, validate 를 통하여 검증을 합니다.
+  const result = schema.validate(ctx.request.body);
+
+  if (result.error) {
+    ctx.status = 400; // Bad Request
+    ctx.body = result.error;
+    return;
+  }
+
   const { title, body, tags } = ctx.request.body;
   const post = new Post({ title, body, tags });
 
@@ -72,6 +103,22 @@ PATCH /api/posts/:id
 */
 export const update = async (ctx) => {
   const { id } = ctx.params;
+
+  // 없을수도 있으니까 require()는 제거한다
+  const schema = Joi.object().keys({
+    title: Joi.string(),
+    body: Joi.string(),
+    tags: Joi.array().items(Joi.string()),
+  });
+
+  // 그 다음엔, validate 를 통하여 검증을 합니다.
+  const result = schema.validate(ctx.request.body);
+
+  if (result.error) {
+    ctx.status = 400; // Bad Request
+    ctx.body = result.error;
+    return;
+  }
 
   try {
     const post = await Post.findByIdAndUpdate(id, ctx.request.body, {
