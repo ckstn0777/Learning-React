@@ -11,7 +11,10 @@ const { PORT, MONGO_URI } = process.env;
 mongoose.Promise = global.Promise; // Node의 네이티브 Promise사용
 
 mongoose
-  .connect(MONGO_URI, { useUnifiedTopology: true, useNewUrlParser: true })
+  .connect(MONGO_URI, {
+    useUnifiedTopology: true,
+    useNewUrlParser: true,
+  })
   .then(() => {
     console.log("connected");
   })
