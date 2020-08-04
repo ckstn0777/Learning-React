@@ -52,9 +52,36 @@ export const write = async (ctx) => {
 GET /api/posts
 */
 export const list = async (ctx) => {
+  // query는 문자열이기 때문에 숫자로 변환해야함
+  // 값이 주어지지 않으면 1을 기본으로 수행
+  const page = parseInt(ctx.query.page || "1", 10);
+
+  if (page < 1) {
+    ctx.status = 400;
+    return;
+  }
+
   try {
-    const posts = await Post.find().exec();
-    ctx.body = posts;
+    // sort _id 1로 설정하면 오름차순, -1로 설정하면 내림차순(가장최근작성순)
+    // limit 함수로 개수 제한
+    // lean 함수는 Json형태로 조회
+    const posts = await Post.find()
+      .sort({ _id: -1 })
+      .limit(10)
+      .skip((page - 1) * 10)
+      .lean()
+      .exec();
+
+    // 마지막 페이지 번호를 찾아서 HTTP Header에 추가해서 보내줌
+    const postCount = await Post.countDocuments().exec();
+    ctx.set("Last-Page", Math.ceil(postCount / 10));
+
+    // 200자 이상이라면 slice로 해서 제외시켜줌
+    ctx.body = posts.map((post) => ({
+      ...post,
+      body:
+        post.body.length < 200 ? post.body : `${post.body.slice(0, 200)}...`,
+    }));
   } catch (e) {
     ctx.throw(500, e);
   }
