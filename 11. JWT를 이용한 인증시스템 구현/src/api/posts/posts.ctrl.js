@@ -72,7 +72,7 @@ export const write = async (ctx) => {
 };
 
 /* 포스트 목록 조회
-GET /api/posts
+GET /api/posts?username=&tag=&page=
 */
 export const list = async (ctx) => {
   // query는 문자열이기 때문에 숫자로 변환해야함
@@ -84,11 +84,22 @@ export const list = async (ctx) => {
     return;
   }
 
+  const { tag, username } = ctx.query;
+  const query = {
+    // tag, username 값이 유효하면 객체 안에 넣고 그렇지 않으면 넣지 않음
+    ...(username ? { "user.username": username } : {}),
+    ...(tag ? { tags: tag } : {}),
+  };
+
+  // 전부 있으면 { 'user.username': 'velopert', tags: 'fruit' }
+  // 아예 없으면 {}
+  console.log(query);
+
   try {
     // sort _id 1로 설정하면 오름차순, -1로 설정하면 내림차순(가장최근작성순)
     // limit 함수로 개수 제한
     // lean 함수는 Json형태로 조회
-    const posts = await Post.find()
+    const posts = await Post.find(query)
       .sort({ _id: -1 })
       .limit(10)
       .skip((page - 1) * 10)
@@ -96,7 +107,7 @@ export const list = async (ctx) => {
       .exec();
 
     // 마지막 페이지 번호를 찾아서 HTTP Header에 추가해서 보내줌
-    const postCount = await Post.countDocuments().exec();
+    const postCount = await Post.countDocuments(query).exec();
     ctx.set("Last-Page", Math.ceil(postCount / 10));
 
     // 200자 이상이라면 slice로 해서 제외시켜줌
