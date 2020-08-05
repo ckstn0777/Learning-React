@@ -9,8 +9,8 @@ const CHANGE_FIELD = 'auth/CHANGE_FIELD';
 const INITIALIZE_FORM = 'auth/INITIALIZE_FORM';
 
 const REGISTER = 'auth/REGISTER';
-const REGISTER_SUCCESS = 'auth/REGISTER';
-const REGISTER_FAILURE = 'auth/REGISTER';
+const REGISTER_SUCCESS = 'auth/REGISTER_SUCCESS';
+const REGISTER_FAILURE = 'auth/REGISTER_FAILURE';
 
 const LOGIN = 'auth/LOGIN';
 const LOGIN_SUCCESS = 'auth/LOGIN_SUCCESS';
@@ -75,6 +75,7 @@ const auth = handleActions(
     [INITIALIZE_FORM]: (state, { payload: form }) => ({
       ...state,
       [form]: initialState[form],
+      authError: null,
     }),
     // 회원가입 성공
     [REGISTER_SUCCESS]: (state, { payload: auth }) => ({
