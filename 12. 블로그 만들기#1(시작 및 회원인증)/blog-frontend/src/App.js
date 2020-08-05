@@ -1,25 +1,23 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Route } from 'react-router-dom';
+import PostListPage from './pages/PostListPage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import WritePage from './pages/WritePage';
+import PostPage from './pages/PostPage';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      {/* 배열을 사용하면 한 라우트 컴포넌트에 여러개의 경로를 쉽게 설정할 수 있음
+      /@:username => http://localhost:3000/@velopert 같은 경로에서 velopert를 username 파라미터로 읽을 수 있음
+      Medium, 브런치 같은 서비스에서도 이렇게 사용함 */}
+      <Route component={PostListPage} path={['/@:username', '/']} exact />
+      <Route component={LoginPage} path="/login" />
+      <Route component={RegisterPage} path="/register" />
+      <Route component={WritePage} path="/write" />
+      <Route component={PostPage} path="/@:username/:postId" />
+    </>
   );
 }
 
