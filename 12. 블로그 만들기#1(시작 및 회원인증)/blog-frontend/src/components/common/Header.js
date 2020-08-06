@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import Responsive from './Responsive';
 import Button from './Button';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const HeaderBlcok = styled.div`
   position: fixed;
@@ -34,7 +35,12 @@ const Spacer = styled.div`
   height: 4rem;
 `;
 
-const Header = () => {
+const UserInfo = styled.div`
+  font-weight: 800;
+  margin-right: 1rem;
+`;
+
+const Header = ({ user }) => {
   return (
     <>
       <HeaderBlcok>
@@ -42,9 +48,16 @@ const Header = () => {
           <Link to="/" className="logo">
             REACTERS
           </Link>
-          <div className="right">
-            <Button to="/login">로그인</Button>
-          </div>
+          {user ? (
+            <div class="right">
+              <UserInfo>{user.username}</UserInfo>
+              <Button>로그아웃</Button>
+            </div>
+          ) : (
+            <div class="right">
+              <Button to="/login">로그인</Button>
+            </div>
+          )}
         </Wrapper>
       </HeaderBlcok>
       <Spacer />
