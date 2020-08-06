@@ -81,6 +81,13 @@ const RegisterForm = ({ history }) => {
   useEffect(() => {
     if (user) {
       history.push('/'); // 홈화면으로 이동
+
+      try {
+        // 로그인 상태유지를 위해 브라우저에 내장되어있는 localStorage 사용
+        localStorage.setItem('user', JSON.stringify(user));
+      } catch (e) {
+        console.log('localStorage is not working');
+      }
     }
   }, [history, user]);
 

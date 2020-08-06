@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import Responsive from './Responsive';
 import Button from './Button';
 import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
 
 const HeaderBlcok = styled.div`
   position: fixed;
