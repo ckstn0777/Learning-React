@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import palette from '../../lib/styles/palette';
 
@@ -27,10 +27,10 @@ const ActionButton = styled.button`
   }
 `;
 
-const PostActionButtons = () => {
+const PostActionButtons = ({ onEdit }) => {
   return (
     <PostActionButtonsBlock>
-      <ActionButton>수정</ActionButton>
+      <ActionButton onClick={onEdit}>수정</ActionButton>
       <ActionButton>삭제</ActionButton>
     </PostActionButtonsBlock>
   );
