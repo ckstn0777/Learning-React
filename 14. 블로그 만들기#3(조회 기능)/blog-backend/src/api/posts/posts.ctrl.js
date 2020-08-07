@@ -1,8 +1,34 @@
 import Post from "../../models/post";
 import mongoose from "mongoose";
 import Joi from "@hapi/joi";
+import sanitizeHtml from "sanitize-html";
 
 const { ObjectId } = mongoose.Types;
+
+// 특정 태그들만 허용(악성스크립트 주입 방지)
+const sanitizeOption = {
+  allowedTags: [
+    "h1",
+    "h2",
+    "b",
+    "i",
+    "u",
+    "s",
+    "p",
+    "ul",
+    "ol",
+    "li",
+    "blockquote",
+    "a",
+    "img",
+  ],
+  allowedAttributes: {
+    a: ["href", "name", "target"],
+    img: ["src"],
+    li: ["class"],
+  },
+  allowedSchemes: ["data", "http"],
+};
 
 // 올바른 아이디인지 검증 + 포스트가 있는지 검증 미들웨어
 export const getPostById = async (ctx, next) => {
@@ -61,7 +87,12 @@ export const write = async (ctx) => {
   }
 
   const { title, body, tags } = ctx.request.body;
-  const post = new Post({ title, body, tags, user: ctx.state.user });
+  const post = new Post({
+    title,
+    body: sanitizeHtml(body, sanitizeOption),
+    tags,
+    user: ctx.state.user,
+  });
 
   try {
     await post.save();
@@ -69,6 +100,14 @@ export const write = async (ctx) => {
   } catch (e) {
     ctx.throw(500, e);
   }
+};
+
+// html을 없애고 내용이 너무 길면 200자로 제한하는 함수
+const removeHtmlAndShorten = (body) => {
+  const filtered = sanitizeHtml(body, {
+    allowedTags: [],
+  });
+  return filtered.length < 200 ? filtered : `${filtered.slice(0, 200)}...`;
 };
 
 /* 포스트 목록 조회
@@ -113,8 +152,7 @@ export const list = async (ctx) => {
     // 200자 이상이라면 slice로 해서 제외시켜줌
     ctx.body = posts.map((post) => ({
       ...post,
-      body:
-        post.body.length < 200 ? post.body : `${post.body.slice(0, 200)}...`,
+      body: removeHtmlAndShorten(post.body),
     }));
   } catch (e) {
     ctx.throw(500, e);
@@ -165,8 +203,14 @@ export const update = async (ctx) => {
     return;
   }
 
+  const nextData = { ...ctx.request.body }; // 객체를 복사하고
+  // body값이 주어졌으면 HTML 필터링
+  if (nextData.body) {
+    nextData.body = sanitizeHtml(nextData.body);
+  }
+
   try {
-    const post = await Post.findByIdAndUpdate(id, ctx.request.body, {
+    const post = await Post.findByIdAndUpdate(id, nextData, {
       new: true, // 이 값을 설정하면 업데이트된 데이터를 반환함
     }).exec();
 
