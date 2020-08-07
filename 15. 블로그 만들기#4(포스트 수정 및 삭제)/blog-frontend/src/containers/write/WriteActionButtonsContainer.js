@@ -2,20 +2,28 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import WriteActionButtons from '../../components/write/WriteActionButtons';
 import { withRouter } from 'react-router-dom';
-import { writePost } from '../../modules/write';
+import { writePost, updatePost } from '../../modules/write';
 
 const WriteActionButtonsContainer = ({ history }) => {
   const dispatch = useDispatch();
-  const { title, body, tags, post, postError } = useSelector(({ write }) => ({
-    title: write.title,
-    body: write.body,
-    tags: write.tags,
-    post: write.post,
-    postError: write.postError,
-  }));
+  const { title, body, tags, post, postError, originalPostId } = useSelector(
+    ({ write }) => ({
+      title: write.title,
+      body: write.body,
+      tags: write.tags,
+      post: write.post,
+      postError: write.postError,
+      originalPostId: write.originalPostId,
+    }),
+  );
 
   // 포스트 등록
   const onPublish = () => {
+    // orginalPostId가 있으면 수정하는 거고, 없으면 새로 생성하는 거임
+    if (originalPostId) {
+      dispatch(updatePost({ title, body, tags, id: originalPostId }));
+      return;
+    }
     dispatch(
       writePost({
         title,
@@ -42,7 +50,13 @@ const WriteActionButtonsContainer = ({ history }) => {
     }
   }, [history, post, postError]);
 
-  return <WriteActionButtons onPublish={onPublish} onCancle={onCancle} />;
+  return (
+    <WriteActionButtons
+      onPublish={onPublish}
+      onCancle={onCancle}
+      isEdit={!!originalPostId}
+    />
+  );
 };
 
 export default withRouter(WriteActionButtonsContainer);
