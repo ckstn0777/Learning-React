@@ -140,14 +140,14 @@ export const list = async (ctx) => {
     // lean 함수는 Json형태로 조회
     const posts = await Post.find(query)
       .sort({ _id: -1 })
-      .limit(10)
-      .skip((page - 1) * 10)
+      .limit(3)
+      .skip((page - 1) * 3)
       .lean()
       .exec();
 
     // 마지막 페이지 번호를 찾아서 HTTP Header에 추가해서 보내줌
     const postCount = await Post.countDocuments(query).exec();
-    ctx.set("Last-Page", Math.ceil(postCount / 10));
+    ctx.set("Last-Page", Math.ceil(postCount / 3));
 
     // 200자 이상이라면 slice로 해서 제외시켜줌
     ctx.body = posts.map((post) => ({
